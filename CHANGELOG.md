@@ -8,10 +8,13 @@ and versions follow [Semantic Versioning](https://semver.org).
 ### Changed
 - Every public type, method and parameter now has Javadoc.
 
-## [0.1.0]
+## [0.1.0] - 2026-10-30
 
 ### Added
 - `flightgeo-zones`: polygon and circle zones with optional floor and ceiling heights; point, leg and route
   checks with an edge tolerance and an unknown-altitude policy; zone validation; `ZoneMonitor` for entries and exits.
 - `flightgeo-conformance`: `ConformanceChecker` comparing planned waypoints with a recorded track, with a verdict,
   findings and route-wide comparisons; `TrackCleaner`, `TrackStats` and `RoutePlanner`.
+
+[Unreleased]: https://github.com/Tshepomabs16/flightgeo/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Tshepomabs16/flightgeo/releases/tag/v0.1.0
