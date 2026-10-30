@@ -27,28 +27,48 @@ public final class ZoneChecker {
         this.unknownAltitude = Objects.requireNonNull(unknownAltitude, "unknownAltitude");
     }
 
-    /** Half a metre of edge tolerance, and an unknown altitude treated as within a zone's band. */
+    /** {@return a checker with half a metre of edge tolerance that treats an unknown altitude as within the band} */
     public static ZoneChecker defaults() {
         return DEFAULTS;
     }
 
+    /**
+     * A copy with another edge tolerance.
+     *
+     * @param metres how close to a polygon's edge counts as inside, zero or more
+     * @return a new checker
+     */
     public ZoneChecker withEdgeTolerance(double metres) {
         return new ZoneChecker(metres, unknownAltitude);
     }
 
+    /**
+     * A copy that treats positions without an altitude differently.
+     *
+     * @param policy what to assume about an unknown altitude
+     * @return a new checker
+     */
     public ZoneChecker withUnknownAltitude(UnknownAltitude policy) {
         return new ZoneChecker(edgeToleranceMetres, policy);
     }
 
+    /** {@return how close to a polygon's edge counts as inside, in metres} */
     public double edgeToleranceMetres() {
         return edgeToleranceMetres;
     }
 
+    /** {@return what this checker assumes about an unknown altitude} */
     public UnknownAltitude unknownAltitude() {
         return unknownAltitude;
     }
 
-    /** True when the point is inside the zone's area and within its band. */
+    /**
+     * Whether a point is inside a zone's area and within its band.
+     *
+     * @param zone the zone
+     * @param point the point
+     * @return true when the point is in the zone
+     */
     public boolean contains(Zone zone, GeoPoint point) {
         Objects.requireNonNull(zone, "zone");
         Objects.requireNonNull(point, "point");
@@ -58,7 +78,14 @@ public final class ZoneChecker {
         return insideArea(zone, point);
     }
 
-    /** True when any part of the straight leg from {@code from} to {@code to} is in the zone. */
+    /**
+     * Whether any part of a straight leg is in a zone.
+     *
+     * @param zone the zone
+     * @param from the start of the leg
+     * @param to the end of the leg
+     * @return true when the leg touches the zone
+     */
     public boolean legTouches(Zone zone, GeoPoint from, GeoPoint to) {
         Objects.requireNonNull(zone, "zone");
         if (!bandMeetsLeg(zone.band(), from.altitude(), to.altitude())) {
@@ -86,12 +113,24 @@ public final class ZoneChecker {
         return false;
     }
 
-    /** True when any waypoint of the route is in the zone, or any leg between them passes through it. */
+    /**
+     * Whether any waypoint of a route is in a zone, or any leg between them passes through it.
+     *
+     * @param zone the zone
+     * @param route the waypoints in order
+     * @return true when the route touches the zone
+     */
     public boolean routeTouches(Zone zone, List<GeoPoint> route) {
         return firstConflict(zone, route) != null;
     }
 
-    /** The first place the route meets each zone, in the zones' order; zones it never meets are left out. */
+    /**
+     * The first place a route meets each zone. Zones it never meets are left out.
+     *
+     * @param zones the zones to check, in the order to report them
+     * @param route the waypoints in order
+     * @return one conflict per zone the route meets
+     */
     public List<RouteConflict> routeConflicts(Collection<? extends Zone> zones, List<GeoPoint> route) {
         List<RouteConflict> out = new ArrayList<>();
         for (Zone zone : zones) {
@@ -103,7 +142,13 @@ public final class ZoneChecker {
         return out;
     }
 
-    /** The zones that contain the point. */
+    /**
+     * The zones that contain a point.
+     *
+     * @param zones the zones to check
+     * @param point the point
+     * @return the zones containing it, in the order given
+     */
     public List<Zone> zonesContaining(Collection<? extends Zone> zones, GeoPoint point) {
         List<Zone> out = new ArrayList<>();
         for (Zone zone : zones) {

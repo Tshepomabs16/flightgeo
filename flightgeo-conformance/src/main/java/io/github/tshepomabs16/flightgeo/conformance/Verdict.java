@@ -19,6 +19,7 @@ public enum Verdict {
         this.label = label;
     }
 
+    /** {@return the verdict in plain English, such as "Completed as planned"} */
     public String label() {
         return label;
     }

@@ -7,12 +7,25 @@ public final class Coordinates {
 
     private Coordinates() {}
 
-    /** Why the pair is not a usable position, or empty when it is. Exactly 0, 0 counts as a missing fix. */
+    /**
+     * Why a pair is not a usable position. Exactly 0, 0 counts as a missing fix.
+     *
+     * @param latitude the latitude in decimal degrees
+     * @param longitude the longitude in decimal degrees
+     * @return the reason, or empty when the position is usable
+     */
     public static Optional<String> problem(double latitude, double longitude) {
         return problem(latitude, longitude, false);
     }
 
-    /** As {@link #problem(double, double)}, but 0, 0 is accepted when {@code allowNullIsland} is true. */
+    /**
+     * Why a pair is not a usable position, optionally accepting 0, 0.
+     *
+     * @param latitude the latitude in decimal degrees
+     * @param longitude the longitude in decimal degrees
+     * @param allowNullIsland true to accept exactly 0, 0 as a real position
+     * @return the reason, or empty when the position is usable
+     */
     public static Optional<String> problem(double latitude, double longitude, boolean allowNullIsland) {
         if (!Double.isFinite(latitude) || !Double.isFinite(longitude)) {
             return Optional.of("is not a number");
@@ -30,7 +43,13 @@ public final class Coordinates {
         return Optional.empty();
     }
 
-    /** True when {@link #problem(double, double)} finds nothing wrong. */
+    /**
+     * Whether a pair is a usable position, with 0, 0 counted as missing.
+     *
+     * @param latitude the latitude in decimal degrees
+     * @param longitude the longitude in decimal degrees
+     * @return true when {@link #problem(double, double)} finds nothing wrong
+     */
     public static boolean isUsable(double latitude, double longitude) {
         return problem(latitude, longitude).isEmpty();
     }

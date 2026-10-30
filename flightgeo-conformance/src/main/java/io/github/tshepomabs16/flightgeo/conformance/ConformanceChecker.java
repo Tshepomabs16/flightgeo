@@ -20,23 +20,44 @@ public final class ConformanceChecker {
 
     private final ConformanceOptions options;
 
+    /** A checker using {@link ConformanceOptions#defaults()}. */
     public ConformanceChecker() {
         this(ConformanceOptions.defaults());
     }
 
+    /**
+     * A checker using thresholds of your own.
+     *
+     * @param options the thresholds to work to
+     */
     public ConformanceChecker(ConformanceOptions options) {
         this.options = Objects.requireNonNull(options, "options");
     }
 
+    /** {@return the thresholds this checker works to} */
     public ConformanceOptions options() {
         return options;
     }
 
-    /** Checks a flight that ran to the end, with nothing else known about it. */
+    /**
+     * Checks a flight that ran to the end, with nothing else known about it.
+     *
+     * @param plan the planned waypoints in order
+     * @param track the recorded readings, in any order
+     * @return the report
+     */
     public ConformanceReport check(List<Waypoint> plan, List<TrackFix> track) {
         return check(plan, track, FlightContext.completedFlight());
     }
 
+    /**
+     * Checks a flight, with what else is known about it.
+     *
+     * @param plan the planned waypoints in order
+     * @param track the recorded readings, in any order
+     * @param context whether it was aborted, its planned speed, limits and zones
+     * @return the report
+     */
     public ConformanceReport check(List<Waypoint> plan, List<TrackFix> track, FlightContext context) {
         Objects.requireNonNull(plan, "plan");
         Objects.requireNonNull(context, "context");

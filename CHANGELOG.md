@@ -5,6 +5,9 @@ and versions follow [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Changed
+- Every public type, method and parameter now has Javadoc.
+
 ## [0.1.0]
 
 ### Added

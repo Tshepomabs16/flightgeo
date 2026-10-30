@@ -10,7 +10,15 @@ public final class Geodesy {
 
     private Geodesy() {}
 
-    /** Great-circle (haversine) distance in metres. */
+    /**
+     * Great-circle (haversine) distance between two positions.
+     *
+     * @param lat1 the first latitude in decimal degrees
+     * @param lon1 the first longitude in decimal degrees
+     * @param lat2 the second latitude in decimal degrees
+     * @param lon2 the second longitude in decimal degrees
+     * @return the distance in metres
+     */
     public static double distanceMetres(double lat1, double lon1, double lat2, double lon2) {
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -20,12 +28,25 @@ public final class Geodesy {
         return EARTH_RADIUS_METRES * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
-    /** Great-circle distance between two points in metres, ignoring altitude. */
+    /**
+     * Great-circle distance between two points, ignoring altitude.
+     *
+     * @param a one point
+     * @param b the other point
+     * @return the distance in metres
+     */
     public static double distanceMetres(GeoPoint a, GeoPoint b) {
         return distanceMetres(a.latitude(), a.longitude(), b.latitude(), b.longitude());
     }
 
-    /** Metres from {@code p} to the nearest point of the segment a to b. Accurate over a few kilometres. */
+    /**
+     * Distance from a point to the nearest point of a straight segment. Accurate over a few kilometres.
+     *
+     * @param p the point
+     * @param a one end of the segment
+     * @param b the other end of the segment
+     * @return the distance in metres
+     */
     public static double distanceToSegmentMetres(GeoPoint p, GeoPoint a, GeoPoint b) {
         double[] pa = project(a.latitude(), a.longitude(), p.latitude(), p.longitude());
         double[] pb = project(b.latitude(), b.longitude(), p.latitude(), p.longitude());

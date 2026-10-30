@@ -14,19 +14,38 @@ public final class TrackCleaner {
 
     private TrackCleaner() {}
 
-    /** The kept readings, and how many were dropped for each reason. */
+    /**
+     * The kept readings, and how many were dropped for each reason.
+     *
+     * @param fixes the kept readings in time order
+     * @param droppedMissing readings dropped for a missing (0, 0) position
+     * @param droppedJumps readings dropped for an impossible jump
+     */
     public record Result(List<TrackFix> fixes, int droppedMissing, int droppedJumps) {
 
+        /** Copies the kept readings. */
         public Result {
             fixes = List.copyOf(fixes);
         }
     }
 
+    /**
+     * Cleans a track with the default speed limit of {@value #DEFAULT_MAX_SPEED_MS} m/s.
+     *
+     * @param track the raw readings, in any order
+     * @return the kept readings and what was dropped
+     */
     public static Result clean(List<TrackFix> track) {
         return clean(track, DEFAULT_MAX_SPEED_MS);
     }
 
-    /** Sorted by time, without 0, 0 fixes or jumps faster than {@code maxSpeedMs}. The first usable reading is trusted. */
+    /**
+     * Sorts a track by time and drops 0, 0 fixes and jumps faster than a limit. The first usable reading is trusted.
+     *
+     * @param track the raw readings, in any order
+     * @param maxSpeedMs the fastest plausible speed in metres per second
+     * @return the kept readings and what was dropped
+     */
     public static Result clean(List<TrackFix> track, double maxSpeedMs) {
         if (!Double.isFinite(maxSpeedMs) || maxSpeedMs <= 0) {
             throw new IllegalArgumentException("maxSpeedMs must be greater than zero");

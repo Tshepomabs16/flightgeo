@@ -9,10 +9,21 @@ public final class RoutePlanner {
 
     private RoutePlanner() {}
 
-    /** Distance in metres and flight time in seconds: every leg at the planned speed, plus every hold. */
+    /**
+     * A route's length and flight time: every leg at the planned speed, plus every hold.
+     *
+     * @param distanceMetres the route's length in metres
+     * @param flightSeconds the planned flight time in seconds
+     */
     public record RouteEstimate(double distanceMetres, int flightSeconds) {}
 
-    /** Length of the legs in order, plus the leg back to the first waypoint when {@code returnToStart}. */
+    /**
+     * The route's length: the legs in order, plus the leg back to the first waypoint if asked.
+     *
+     * @param route the waypoints in order
+     * @param returnToStart true to include the leg back to the first waypoint
+     * @return the length in metres; zero for fewer than two waypoints
+     */
     public static double distanceMetres(List<Waypoint> route, boolean returnToStart) {
         if (route.size() < 2) {
             return 0;
@@ -24,7 +35,13 @@ public final class RoutePlanner {
         return returnToStart ? metres + leg(route.get(route.size() - 1), route.get(0)) : metres;
     }
 
-    /** Seconds from the first waypoint to each waypoint at the planned speed, holding at each earlier one. */
+    /**
+     * When the aircraft is planned to reach each waypoint, holding at each earlier one.
+     *
+     * @param route the waypoints in order
+     * @param speedMs the planned speed in metres per second
+     * @return seconds from the first waypoint to each waypoint, in route order
+     */
     public static List<Integer> plannedArrivals(List<Waypoint> route, double speedMs) {
         requireSpeed(speedMs);
         List<Integer> out = new ArrayList<>();
@@ -38,6 +55,14 @@ public final class RoutePlanner {
         return out;
     }
 
+    /**
+     * The route's length and flight time at a planned speed.
+     *
+     * @param route the waypoints in order
+     * @param speedMs the planned speed in metres per second
+     * @param returnToStart true to include the leg back to the first waypoint
+     * @return the length and the flight time, holds included
+     */
     public static RouteEstimate estimate(List<Waypoint> route, double speedMs, boolean returnToStart) {
         requireSpeed(speedMs);
         double distance = distanceMetres(route, returnToStart);
@@ -45,7 +70,14 @@ public final class RoutePlanner {
         return new RouteEstimate(distance, (int) Math.round(distance / speedMs) + holds);
     }
 
-    /** Batteries needed: the distance over the range left after the reserve, rounded up; zero for no distance. */
+    /**
+     * Batteries needed: the distance over the range left after the reserve, rounded up.
+     *
+     * @param distanceMetres the distance to fly
+     * @param rangePerBatteryMetres how far one full battery goes
+     * @param reservePercent the share of each battery kept unused, from 0 up to 100
+     * @return the number of batteries; zero for no distance
+     */
     public static int batteriesNeeded(double distanceMetres, double rangePerBatteryMetres, double reservePercent) {
         if (!Double.isFinite(rangePerBatteryMetres) || rangePerBatteryMetres <= 0) {
             throw new IllegalArgumentException("Range per battery must be greater than zero");

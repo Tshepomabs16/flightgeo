@@ -10,12 +10,23 @@ public final class ZoneValidator {
 
     private ZoneValidator() {}
 
-    /** Every reason the zone can't be relied on, as plain sentences; empty when it is fine. */
+    /**
+     * Every reason a zone can't be relied on, as plain sentences.
+     *
+     * @param zone the zone to check
+     * @return the problems found; empty when it is fine
+     */
     public static List<String> problems(Zone zone) {
         return problems(zone, null);
     }
 
-    /** As {@link #problems(Zone)}; with an operating ceiling, a floor at or above it is reported as unreachable. */
+    /**
+     * Every reason a zone can't be relied on, including a floor no permitted flight could reach.
+     *
+     * @param zone the zone to check
+     * @param operatingCeilingMetres the highest permitted altitude, or null to skip that check
+     * @return the problems found; empty when it is fine
+     */
     public static List<String> problems(Zone zone, Double operatingCeilingMetres) {
         List<String> out = new ArrayList<>();
         if (zone.id().isBlank()) {
@@ -56,7 +67,12 @@ public final class ZoneValidator {
         return out;
     }
 
-    /** Throws {@link IllegalArgumentException} listing the problems, if there are any. */
+    /**
+     * Throws when a zone has any problem.
+     *
+     * @param zone the zone to check
+     * @throws IllegalArgumentException listing the problems, when there are any
+     */
     public static void requireValid(Zone zone) {
         List<String> problems = problems(zone);
         if (!problems.isEmpty()) {

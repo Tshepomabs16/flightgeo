@@ -11,13 +11,25 @@ public final class TrackStats {
 
     private TrackStats() {}
 
-    /** True when the reading is moving or airborne by the options' thresholds. */
+    /**
+     * Whether a reading is moving or airborne by the options' thresholds.
+     *
+     * @param fix the reading
+     * @param options the thresholds
+     * @return true when it is moving
+     */
     public static boolean isMoving(TrackFix fix, ConformanceOptions options) {
         return (fix.groundSpeedMs() != null && fix.groundSpeedMs() >= options.movingSpeedMs())
                 || (fix.altitude() != null && fix.altitude() >= options.movingAltitudeMetres());
     }
 
-    /** Metres along the track, adding each step between readings but never bridging a gap longer than maxGap. */
+    /**
+     * Distance along the track, never bridging a gap longer than the options' maximum.
+     *
+     * @param track the readings in time order
+     * @param options the thresholds
+     * @return the distance in metres
+     */
     public static double distanceMetres(List<TrackFix> track, ConformanceOptions options) {
         double metres = 0;
         for (int i = 1; i < track.size(); i++) {
@@ -30,7 +42,13 @@ public final class TrackStats {
         return metres;
     }
 
-    /** Seconds in the air over the whole track; zero when no reading was moving. */
+    /**
+     * Time in the air over the whole track.
+     *
+     * @param track the readings in time order
+     * @param options the thresholds
+     * @return the seconds airborne; zero when no reading was moving
+     */
     public static long airborneSeconds(List<TrackFix> track, ConformanceOptions options) {
         if (track.size() < 2 || track.stream().noneMatch(f -> isMoving(f, options))) {
             return 0;
@@ -39,7 +57,14 @@ public final class TrackStats {
         return airborneSeconds(track, List.of(whole), options);
     }
 
-    /** Seconds in the air within the windows: a mid-flight landing is left out, a short signal drop is not. */
+    /**
+     * Time in the air within the windows: a mid-flight landing is left out, a short signal drop is not.
+     *
+     * @param track the readings in time order
+     * @param windows the stretches to count; with no moving reading, their length stands in
+     * @param options the thresholds
+     * @return the seconds airborne
+     */
     public static long airborneSeconds(List<TrackFix> track, List<TimeWindow> windows, ConformanceOptions options) {
         if (track.stream().noneMatch(f -> isMoving(f, options))) {
             return windows.stream().mapToLong(TimeWindow::seconds).sum();
@@ -62,12 +87,23 @@ public final class TrackStats {
         return total;
     }
 
-    /** The highest altitude recorded, if any reading had one. */
+    /**
+     * The highest altitude recorded.
+     *
+     * @param track the readings
+     * @return the highest altitude in metres, or empty when no reading had one
+     */
     public static OptionalDouble highestAltitude(List<TrackFix> track) {
         return track.stream().filter(f -> f.altitude() != null).mapToDouble(TrackFix::altitude).max();
     }
 
-    /** Each unbroken stretch above the limit; readings without an altitude neither start nor end one. */
+    /**
+     * Each unbroken stretch above a limit. Readings without an altitude neither start nor end one.
+     *
+     * @param track the readings in time order
+     * @param limitMetres the altitude limit in metres
+     * @return the stretches above it, in time order
+     */
     public static List<AltitudeExceedance> altitudeExceedances(List<TrackFix> track, double limitMetres) {
         List<AltitudeExceedance> out = new ArrayList<>();
         TrackFix first = null;
