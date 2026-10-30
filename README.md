@@ -1,5 +1,7 @@
 # flightgeo
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.tshepomabs16/flightgeo-zones?label=Maven%20Central)](https://central.sonatype.com/namespace/io.github.tshepomabs16)
+
 Small, dependency-free Java libraries for the geometry of aircraft and vehicle routes.
 
 | Module | What it does |
